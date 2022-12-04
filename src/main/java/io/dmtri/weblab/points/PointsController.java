@@ -1,37 +1,42 @@
 package io.dmtri.weblab.points;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import io.dmtri.weblab.areas.Area;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import io.dmtri.weblab.points.CompoundPointRequest;
 
 @RestController
 @RequestMapping("/points")
 public class PointsController {
-    @GetMapping("/?")
-    public String getAllPoints() {
-        return "haha";
+    private final Area checker;
+    private final PointAttemptRepository repository;
+
+    @Autowired
+    public PointsController(PointAttemptRepository repository, Area checker) {
+        this.repository = repository;
+        this.checker = checker;
     }
 
-    @PostMapping(value={"/", ""})
-    public String test(
+    @PostMapping("")
+    public Iterable<PointAttempt> test(
             @RequestBody
             CompoundPointRequest cpr
     ) {
-        List<CompoundPointRequest.PointRequest> l = new LinkedList<>();
-
-        Iterator<CompoundPointRequest.PointRequest> it = cpr.getIterator();
+        Iterator<Point> it = cpr.getIterator();
 
         while (it.hasNext()) {
-            l.add(it.next());
+            Point p = it.next();
+            PointAttempt attempt = new PointAttempt(p, checker);
+            repository.save(attempt);
         }
 
-        return "Total of " + l.size() + " points received";
+        return repository.findAll();
     }
 }
