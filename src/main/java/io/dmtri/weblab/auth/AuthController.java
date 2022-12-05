@@ -5,11 +5,11 @@ import io.dmtri.weblab.jwt.JwtRefreshToken;
 import io.dmtri.weblab.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +32,18 @@ public class AuthController {
         this.jwt = jwt;
     }
 
-    @GetMapping("/me")
-    public String me() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    @GetMapping("/users")
+    public Iterable<User> getAllUsers() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/users/{username}")
+    public User getUserInfo(@PathVariable String username) {
+        try {
+            return (User) service.loadUserByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     @PostMapping("/login")

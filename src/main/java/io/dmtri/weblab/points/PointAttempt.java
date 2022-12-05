@@ -1,11 +1,17 @@
 package io.dmtri.weblab.points;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dmtri.weblab.areas.Area;
+import io.dmtri.weblab.auth.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,6 +29,9 @@ public class PointAttempt {
     private double processTime;
     @Column(nullable = false)
     private boolean success;
+    @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JoinColumn(name="username", nullable = false)
+    private User user;
 
     public PointAttempt() {}
 
@@ -76,5 +85,18 @@ public class PointAttempt {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public String getUsername() {
+        return user.getUsername();
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

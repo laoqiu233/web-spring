@@ -1,7 +1,9 @@
 package io.dmtri.weblab.points;
 
 import io.dmtri.weblab.areas.Area;
+import io.dmtri.weblab.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,16 +33,19 @@ public class PointsController {
     }
 
     @PostMapping
-    public Iterable<PointAttempt> submitPoitns(
+    public Iterable<PointAttempt> submitPoints(
             @RequestBody
             CompoundPointRequest cpr
     ) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
         Iterator<Point> it = cpr.getIterator();
         List<PointAttempt> results = new LinkedList<>();
 
         while (it.hasNext()) {
             Point p = it.next();
             PointAttempt attempt = new PointAttempt(p, checker);
+            attempt.setUser(user);
             results.add(repository.save(attempt));
         }
 
