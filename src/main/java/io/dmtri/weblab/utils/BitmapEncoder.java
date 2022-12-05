@@ -5,7 +5,9 @@ import java.util.Base64;
 /**
  * Encode the bitmap as a base64 string.
  */
-public class BitmapEncoder {
+public final class BitmapEncoder {
+    private BitmapEncoder() {}
+
     public static String encode(boolean[][] bitmap, int bitmapResolution) {
         // Encodes the bitmap in base64 for frontend use.
 

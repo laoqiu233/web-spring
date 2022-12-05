@@ -6,6 +6,9 @@ import io.dmtri.weblab.areas.OrArea;
 import io.dmtri.weblab.areas.QuadrantArea;
 import io.dmtri.weblab.areas.RectangleArea;
 import io.dmtri.weblab.areas.RotatedArea;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +17,8 @@ import org.springframework.context.annotation.Scope;
 @SpringBootApplication
 public class WeblabApplication {
 	public static void main(String[] args) {
+		// Generate key
+		// System.out.println(Encoders.BASE64.encode(Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded()));
 		SpringApplication.run(WeblabApplication.class, args);
 	}
 

@@ -2,6 +2,7 @@ package io.dmtri.weblab.points;
 
 import io.dmtri.weblab.areas.Area;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 import io.dmtri.weblab.points.CompoundPointRequest;
 
 @RestController
-@RequestMapping("/points")
+@RequestMapping("/api/points")
 public class PointsController {
     private final Area checker;
     private final PointAttemptRepository repository;
@@ -24,19 +25,25 @@ public class PointsController {
         this.checker = checker;
     }
 
-    @PostMapping("")
-    public Iterable<PointAttempt> test(
+    @GetMapping
+    public Iterable<PointAttempt> getPoints() {
+        return repository.findAll();
+    }
+
+    @PostMapping
+    public Iterable<PointAttempt> submitPoitns(
             @RequestBody
             CompoundPointRequest cpr
     ) {
         Iterator<Point> it = cpr.getIterator();
+        List<PointAttempt> results = new LinkedList<>();
 
         while (it.hasNext()) {
             Point p = it.next();
             PointAttempt attempt = new PointAttempt(p, checker);
-            repository.save(attempt);
+            results.add(repository.save(attempt));
         }
 
-        return repository.findAll();
+        return results;
     }
 }
