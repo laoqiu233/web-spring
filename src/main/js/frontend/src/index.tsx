@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegsiterPage';
+import HomePage from './pages/HomePage';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
@@ -17,8 +19,16 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
+        path: 'home',
+        element: <HomePage/>
+      },
+      {
         path: 'login',
         element: <LoginPage/>
+      },
+      {
+        path: 'register',
+        element: <RegisterPage/>
       }
     ]
   }

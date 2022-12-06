@@ -82,7 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody AuthRequest request) {
+    public JwtPair register(@RequestBody AuthRequest request) {
         // Validate
         if (!request.username().matches("^[a-zA-Z0-9_]{3,10}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad username");
@@ -101,6 +101,9 @@ public class AuthController {
         user.setPassword(encoder.encode(request.password()));
         repository.save(user);
 
-        return "Success!";
+        return new JwtPair(
+                jwt.generateAccessToken(user),
+                jwt.generateRefreshToken(user)
+        );
     }
 }
