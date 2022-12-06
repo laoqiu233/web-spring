@@ -23,10 +23,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         return http
                 .authorizeHttpRequests()
-                .requestMatchers("/api/auth/me").authenticated()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/points/**").authenticated()
-                .anyRequest().permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register").permitAll()
+                .requestMatchers("/api/auth/refresh").permitAll()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf().disable()

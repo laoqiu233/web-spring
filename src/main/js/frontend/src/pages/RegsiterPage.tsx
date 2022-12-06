@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Button } from "../components/Button";
+import PasswordInput from "../components/PasswordInput";
 import TextInput from "../components/TextInput";
 import { registerAndAuthenticateUser } from "../features/auth/authSlice";
 import image from '../images/insanity.jpg';
@@ -61,8 +62,7 @@ export default function RegisterPage() {
                         onChange={e => setUsername(e.target.value)}
                         warningText={usernameWarning}
                     />
-                    <TextInput
-                        type="password"
+                    <PasswordInput
                         id="password"
                         name="password"
                         placeholder='Password'
@@ -70,8 +70,7 @@ export default function RegisterPage() {
                         onChange={e => setPassword(e.target.value)}
                         warningText={passwordWarning}
                     />
-                    <TextInput
-                        type="password"
+                    <PasswordInput
                         id="password-repeat"
                         name="password-repeat"
                         placeholder='Repeat your password'

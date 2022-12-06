@@ -15,7 +15,7 @@ public class AreaController {
         this.area = area;
     }
 
-    @GetMapping("/area")
+    @GetMapping("/api/area")
     public String getAreaBitmap() {
         return BitmapEncoder.encode(area.generateBitmap(BITMAP_RESOLUTION), BITMAP_RESOLUTION);
     }

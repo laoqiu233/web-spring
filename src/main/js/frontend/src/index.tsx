@@ -5,6 +5,7 @@ import { store } from './app/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegsiterPage';
@@ -24,11 +25,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <LoginPage/>
+        element: (
+          <div className="flex items-center justify-center absolute top-0 left-0 w-full h-screen">
+            <LoginPage/>
+          </div>
+        )
       },
       {
         path: 'register',
-        element: <RegisterPage/>
+        element: (
+          <div className='flex items-center justify-center absolute top-0 left-0 w-full h-screen'>
+            <RegisterPage/>
+          </div>
+        )
       }
     ]
   }

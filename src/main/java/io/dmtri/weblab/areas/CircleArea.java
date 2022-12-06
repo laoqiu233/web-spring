@@ -14,6 +14,6 @@ public class CircleArea extends AbstractArea {
 
     @Override
     public boolean checkPoint(Point point) {
-        return point.x() * point.y() + point.y() * point.y() <= point.r() * point.r() * r * r;
+        return point.x() * point.x() + point.y() * point.y() <= point.r() * point.r() * r * r;
     }
 }

@@ -1,11 +1,26 @@
-function postRequest(url: string, body: object) {
+function postRequest(url: string, body: object, accessToken?: string) {
+    let headers = {
+        'Content-Type': 'application/json',
+        'Authorization': ''
+    };
+
+    if (accessToken !== undefined) headers['Authorization'] = `Bearer ${accessToken}`;
+
     return fetch(url, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify(body)
     });
+}
+
+function getRequest(url: string, accessToken?: string) {
+    let headers = {
+        'Authorization': ''
+    };
+
+    if (accessToken !== undefined) headers['Authorization'] = `Bearer ${accessToken}`;
+
+    return fetch(url, {headers});
 }
 
 export interface ApiCallStatus<T> {
@@ -42,4 +57,16 @@ export async function loginUser(username:string, password:string): Promise<ApiCa
 export async function refreshTokens(refreshToken: string): Promise<ApiCallStatus<JwtTokenPair>> {
     const resp = await postRequest('/api/auth/refresh', {refreshToken});
     return extractJwtTokenPairFromResponse(resp);
+}
+
+export async function getCanvasBitmap(accessToken: string): Promise<ApiCallStatus<string>> {
+    const resp = await getRequest('/api/area', accessToken);
+    const body = await resp.text();
+    
+    if (!resp.ok) return {success: false, message: body, payload: ''};
+
+    return {
+        success: true,
+        payload: body
+    };
 }

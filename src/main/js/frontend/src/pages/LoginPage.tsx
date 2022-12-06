@@ -6,6 +6,7 @@ import TextInput from "../components/TextInput";
 import { validateUsernamePassword } from "../features/auth/authSlice";
 import image from '../images/zxc-cat.gif';
 import loaderAnimation from '../images/loader.svg'
+import PasswordInput from "../components/PasswordInput";
 
 export default function LoginPage() {
     const authenticated = useAppSelector(state => state.auth.authenticated);
@@ -44,7 +45,7 @@ export default function LoginPage() {
                 <h1 className='text-3xl font-extrabold mt-2 mb-5'>Login</h1>
                 <form onSubmit={onSubmit}>
                     <TextInput id="username" name="username" placeholder='Username' value={username} onChange={e => setUsername(e.target.value)}/>
-                    <TextInput type="password" id="password" name="password" placeholder='Password' value={password} onChange={e => setPassword(e.target.value)}/>
+                    <PasswordInput id="password" name="password" placeholder='Password' value={password} onChange={e => setPassword(e.target.value)}/>
                     <p className="text-red-500 text-xs mb-5">{warningText}</p>
                     <Button disabled={disableButton}>{loading ? <img src={loaderAnimation} alt='Loading' className="m-auto max-h-[1em]"/> : 'Login'}</Button>
                 </form>
