@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface CheckboxListProps {
     name: string,
     options: number[],

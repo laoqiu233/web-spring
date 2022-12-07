@@ -16,6 +16,7 @@ export default function HomePage() {
     const dispatch = useAppDispatch();
     const [bitmap, setBitmap] = useState('');
     const [disableForm, setDisableForm] = useState(false);
+    const [globalR, setGlobalR] = useState(0);
 
     useEffect(() => {
         getCanvasBitmap(accessToken)
@@ -70,9 +71,9 @@ export default function HomePage() {
     return (
         <div>
             <div className='bg-gray-100 w-fit p-3 rounded-xl mx-auto mb-5 shadow-xl'>
-                <PointsCanvas bitmapRaw={bitmap} r={1}/>
+                <PointsCanvas bitmapRaw={bitmap} points={points} r={globalR}/>
             </div>
-            <PointForm showLoader={disableForm} onSubmit={submitPoints}/>
+            <PointForm showLoader={disableForm} onSubmit={submitPoints} setGlobalR={setGlobalR}/>
             <PointsTable points={points} showLoader={status === 'pending'}/>
             <Button onClick={onClick}>Logout</Button>
         </div>

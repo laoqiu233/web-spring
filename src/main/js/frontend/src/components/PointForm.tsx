@@ -7,16 +7,17 @@ import loaderImage from '../images/loader.svg';
 
 interface PointFormProps {
     showLoader: boolean
-    onSubmit(request: CompoundPointRequest): void
+    onSubmit(request: CompoundPointRequest): void,
+    setGlobalR(r:number):void
 };
 
-export default function PointForm({ showLoader, onSubmit }: PointFormProps) {
+export default function PointForm({ showLoader, onSubmit, setGlobalR }: PointFormProps) {
     const [xs, setXs] = useState<number[]>([]);
     const [y, setY] = useState('');
     const [rs, setRs] = useState<number[]>([]);
 
     const xWarning = (xs.length === 0 ? 'Select at least one option' : '');
-    const yWarning = (y.match(/^[0-9]+(?:\.[0-9]+)?$/) === null ? 'Invalid number' : '');
+    const yWarning = (y.match(/^[+-]?[0-9]+(?:\.[0-9]+)?$/) === null ? 'Invalid number' : '');
     const rWarning = (rs.length === 0 ? 'Select at least one option' : '') 
                    + (rs.filter(x => x <= 0).length > 0 ? 'You should only select the positive numbers' : '');
 
@@ -52,7 +53,11 @@ export default function PointForm({ showLoader, onSubmit }: PointFormProps) {
                 options={Array(11).fill(0).map((x, i) => i-5)}
                 selectedOptions={rs}
                 warning={rWarning}
-                setValues={setRs}
+                setValues={(v) => {
+                    setRs(v);
+                    if (v.length === 0) setGlobalR(0);
+                    else setGlobalR(Math.max(...v));
+                }}
                 disabled={showLoader}
             />
             <Button disabled={disableButton || showLoader} onClick={() => onSubmit({x:xs, r:rs, y: [parseFloat(y)]})}>

@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react"
+import { PointAttempt } from "../utils/ApiClient";
 
 const canvasSize = 300;
 const themeColor = [0xAA, 0xBB, 0xCC, 0xFF];
+const hitColor = 'rgb(139, 92, 246)';
+const missColor = 'rgb(239, 68, 68)';
 
 interface PointsCanvasProps {
     bitmapRaw: string,
+    points: PointAttempt[],
     r: number
 }
 
@@ -26,7 +30,7 @@ function generateImageDataFromBitmap(ctx: CanvasRenderingContext2D, bitmap: any[
     return imageData;
 }
 
-function renderGraph(ctx: CanvasRenderingContext2D, r: number) {
+function renderGraph(ctx: CanvasRenderingContext2D, points:PointAttempt[], r: number) {
     ctx.clearRect(0, 0, canvasSize, canvasSize);
 
     ctx.strokeStyle = '#000';
@@ -68,21 +72,21 @@ function renderGraph(ctx: CanvasRenderingContext2D, r: number) {
         ctx.fillText(labels[i-1], canvasSize/2+7, canvasSize - i*canvasSize/6);
     }
 
-    // if (r == 0) return;
+    if (r <= 0) return;
 
-    // // Draw all points
-    // POINTS.forEach((v) => {
-    //     const x = v.x / r * width / 3 + width / 2;
-    //     const y = -v.y / r * height / 3 + height / 2;
+    // Draw all points
+    points.forEach((v) => {
+        const x = v.x / r * canvasSize / 3 + canvasSize / 2;
+        const y = -v.y / r * canvasSize / 3 + canvasSize / 2;
 
-    //     ctx.fillStyle = v.color;
-    //     ctx.beginPath();
-    //     ctx.arc(x, y, 5, 0, Math.PI * 2);
-    //     ctx.fill();
-    // });
+        ctx.fillStyle = (v.success ? hitColor : missColor);
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
-export default function PointsCanvas({bitmapRaw, r} : PointsCanvasProps) {
+export default function PointsCanvas({bitmapRaw, points, r} : PointsCanvasProps) {
     const [areasImage, setAreasImage] = useState('');
     const canvasRef = useRef<HTMLCanvasElement>(null);
     
@@ -111,14 +115,14 @@ export default function PointsCanvas({bitmapRaw, r} : PointsCanvasProps) {
                 const areasImage = generateImageDataFromBitmap(ctx, bitmap, s);
                 ctx.putImageData(areasImage, 0, 0);
                 setAreasImage(canvasRef.current.toDataURL());
-                renderGraph(ctx, r);
+                renderGraph(ctx, points, r);
             }
         }
     }, [bitmapRaw, r]);
 
     if (canvasRef.current !== null) {
         const ctx = canvasRef.current.getContext('2d');
-        if (ctx !== null) renderGraph(ctx, r);
+        if (ctx !== null) renderGraph(ctx, points, r);
     }
 
     return (

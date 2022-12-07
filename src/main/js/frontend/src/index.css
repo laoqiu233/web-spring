@@ -16,3 +16,26 @@ body {
     rgba(0, 0, 0, 0.3) 40px
   );
 }
+
+.toast-fade-enter {
+  position: relative;
+  opacity: 0;
+  left: -10px;
+}
+.toast-fade-enter-active {
+  position: relative;
+  opacity: 1;
+  left: 0;
+  transition: all 200ms;
+}
+.toast-fade-exit {
+  position: relative;
+  opacity: 1;
+  left: 0;
+}
+.toast-fade-exit-active {
+  position: relative;
+  opacity: 0;
+  left: -20px;
+  transition: all 200ms;
+}
