@@ -32,6 +32,7 @@ export default function LoginPage() {
                 if (res.success) {
                     navigate('/home');
                 } else {
+                    console.log(res);
                     setWarningText(res.message || 'Something went wrong, try again later.');
                 }
             });
