@@ -3,19 +3,19 @@ package io.dmtri.weblab.points;
 import java.util.Iterator;
 
 public class CompoundPointRequest {
-    private float[] xs;
-    private float[] ys;
-    private float[] rs;
+    private double[] xs;
+    private double[] ys;
+    private double[] rs;
 
-    public void setX(float[] x) {
+    public void setX(double[] x) {
         xs = x;
     }
 
-    public void setY(float[] y) {
+    public void setY(double[] y) {
         ys = y;
     }
 
-    public void setR(float[] r) {
+    public void setR(double[] r) {
         rs = r;
     }
 

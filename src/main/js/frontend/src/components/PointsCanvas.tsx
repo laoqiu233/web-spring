@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react"
+import { useAppDispatch } from "../app/hooks";
+import { infoToast } from "../features/toasts/toastsSlice";
 import { PointAttempt } from "../utils/ApiClient";
 
 const canvasSize = 300;
@@ -9,7 +11,8 @@ const missColor = 'rgb(239, 68, 68)';
 interface PointsCanvasProps {
     bitmapRaw: string,
     points: PointAttempt[],
-    r: number
+    r: number,
+    onClick(x:number, y:number):void
 }
 
 function generateImageDataFromBitmap(ctx: CanvasRenderingContext2D, bitmap: any[], bitmapSize: number) {
@@ -86,8 +89,9 @@ function renderGraph(ctx: CanvasRenderingContext2D, points:PointAttempt[], r: nu
     });
 }
 
-export default function PointsCanvas({bitmapRaw, points, r} : PointsCanvasProps) {
+export default function PointsCanvas({bitmapRaw, points, r, onClick} : PointsCanvasProps) {
     const [areasImage, setAreasImage] = useState('');
+    const dispatch = useAppDispatch();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     
     useEffect(() => {
@@ -115,22 +119,38 @@ export default function PointsCanvas({bitmapRaw, points, r} : PointsCanvasProps)
                 const areasImage = generateImageDataFromBitmap(ctx, bitmap, s);
                 ctx.putImageData(areasImage, 0, 0);
                 setAreasImage(canvasRef.current.toDataURL());
-                renderGraph(ctx, points, r);
             }
         }
-    }, [bitmapRaw, r]);
+    }, [bitmapRaw]);
 
-    if (canvasRef.current !== null) {
-        const ctx = canvasRef.current.getContext('2d');
-        if (ctx !== null) renderGraph(ctx, points, r);
-    }
+    useEffect(() => {
+        if (canvasRef.current !== null) {
+            const ctx = canvasRef.current.getContext('2d');
+            if (ctx !== null) renderGraph(ctx, points, r);
+        }
+    }, [points, r]);
 
     return (
         <canvas
             ref={canvasRef} 
             style={{background: `url("${areasImage}")`}} 
-            width='300' 
-            height='300'
+            width={canvasSize}
+            height={canvasSize}
+            onClick={(e) => {
+                if (r <= 0) {
+                    dispatch(infoToast('Please select a valid vlaue for R'));
+                } else {
+                    const offsetX = e.nativeEvent.offsetX;
+                    const offsetY = e.nativeEvent.offsetY;
+
+                    let x = (2 * offsetX / canvasSize - 1) *  1.5 * r;
+                    let y = (2 * offsetY / canvasSize - 1) * -1.5 * r;
+                    x = Math.round(x * 100) / 100;
+                    y = Math.round(y * 100) / 100;
+
+                    onClick(x, y);
+                }
+            }}
         />
     )
 }

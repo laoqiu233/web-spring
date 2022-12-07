@@ -31,3 +31,21 @@ export const toastsSlice = createSlice({
 });
 
 export const { toastAdded, toastRemoved } = toastsSlice.actions;
+
+export const warningToast = (message: string) => toastAdded({
+    id: 0,
+    message,
+    type: 'warning'
+});
+
+export const successToast = (message: string) => toastAdded({
+    id: 0,
+    message,
+    type: 'success'
+});
+
+export const infoToast = (message: string) => toastAdded({
+    id: 0,
+    message,
+    type: 'info'
+});
