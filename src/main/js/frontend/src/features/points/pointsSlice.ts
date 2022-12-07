@@ -1,38 +1,59 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getStaticContextFromError } from "@remix-run/router";
 import { AppDispatch, RootState } from "../../app/store";
-import { ApiCallStatus, getAllPoints, PointAttempt } from "../../utils/ApiClient";
+import { ApiCallStatus, CompoundPointRequest, getAllPoints, PointAttempt, sendPoints } from "../../utils/ApiClient";
 
 interface PointsState {
-    points: PointAttempt[]
+    points: PointAttempt[],
+    status: 'idle' | 'pending' | 'success' | 'failed'
 }
 
 const initialState: PointsState = {
-    points: []
+    points: [],
+    status: 'idle'
 }
 
-export async function loadPointsFromApi(dispatch: AppDispatch, getState: () => RootState) : Promise<ApiCallStatus<PointAttempt[]>> {
-    if (getState().auth.authenticated) {
-        const result = await getAllPoints(getState().auth.userInfo.accessToken);
-        
-        if (result.success) {
-            dispatch(pointsLoaded(result.payload));
-        }
-        
-        return result;
-    } else {
-        console.log('Trying to get points while not authenticated');
-        return {success: false, message: 'Not authenticated', payload: []};
+export const loadPointsFromApi = createAsyncThunk<
+    PointAttempt[],
+    boolean,
+    {
+        dispatch: AppDispatch,
+        state: RootState,
+        rejectValue: string
     }
-}
+>(
+    'points/fetchPoints',
+    async (onlyOwnedPoints, thunkApi) => {
+        const { authenticated, userInfo: { accessToken } } = thunkApi.getState().auth;
+
+        if (!authenticated) return thunkApi.rejectWithValue('Unauthenticated');
+
+        const result = await getAllPoints(accessToken);
+
+        if (result.success) {
+            return result.payload;
+        }
+
+        return thunkApi.rejectWithValue(result.message || 'Unknown error');
+    }
+)
 
 export const pointsSlice = createSlice({
     name: 'points',
     initialState,
-    reducers: {
-        pointsLoaded: (state, action: PayloadAction<PointAttempt[]>) => {
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+        .addCase(loadPointsFromApi.pending, (state, action) => {
+            state.status = 'pending';
+        })
+        .addCase(loadPointsFromApi.fulfilled, (state, action) => {
+            state.status = 'success';
             state.points = action.payload;
-        }
-    } 
+        })
+        .addCase(loadPointsFromApi.rejected, (state, action) => {
+            state.status = 'failed';
+            state.points = [];
+        })
+    }
 });
-
-export const { pointsLoaded } = pointsSlice.actions;

@@ -1,5 +1,3 @@
-import { access } from "fs";
-
 function postRequest(url: string, body: object, accessToken?: string) {
     let headers = {
         'Content-Type': 'application/json',
@@ -25,6 +23,19 @@ function getRequest(url: string, accessToken?: string) {
     return fetch(url, {headers});
 }
 
+async function handleResponse<T>(resp: Response, successCallback: (resp: Response) => Promise<ApiCallStatus<T>>, payloadOnError:T): Promise<ApiCallStatus<T>> {
+    if (resp.ok) {
+        return await successCallback(resp);
+    } else {
+        const body = await resp.text();
+        try {
+            return {success: false, message: JSON.parse(body).message, payload: payloadOnError};
+        } catch (e) {
+            return {success: false, message: body, payload: payloadOnError};
+        }
+    }
+}
+
 export interface ApiCallStatus<T> {
     success: boolean,
     message?: string,
@@ -37,23 +48,10 @@ export interface JwtTokenPair {
 }
 
 async function extractJwtTokenPairFromResponse(resp: Response): Promise<ApiCallStatus<JwtTokenPair>> {
-    if (resp.ok) {
-        const body = await resp.json();
+    return handleResponse(resp, async (r) => {
+        const body = await r.json();
         return {success: true, payload: {accessToken: body.accessToken, refreshToken: body.refreshToken}};
-    }
-    
-    const body = await resp.text()
-    let err = '';
-
-    try {
-        const json = JSON.parse(body);
-        err = json.message;
-    } catch (e) {
-        err = body;
-    }
-    
-
-    return {success: false, message: err, payload: {accessToken: '', refreshToken: ''}};
+    }, {accessToken: '', refreshToken: ''});
 }
 
 export async function registerUser(username:string, password:string): Promise<ApiCallStatus<JwtTokenPair>> {
@@ -84,9 +82,9 @@ export async function getCanvasBitmap(accessToken: string): Promise<ApiCallStatu
 }
 
 export interface CompoundPointRequest {
-    xs: number[],
-    ys: number[],
-    rs: number[]
+    x: number[],
+    y: number[],
+    r: number[]
 };
 
 export interface PointAttempt {
@@ -100,28 +98,35 @@ export interface PointAttempt {
     user: string
 };
 
+function transformPoint(v: any) {
+    return {
+        id: v.id,
+        x: v.point.x,
+        y: v.point.y,
+        r: v.point.r,
+        user: v.username,
+        attemptTime: v.attemptTime,
+        processTime: v.processTime,
+        success: v.success
+    }
+}
+
 export async function getAllPoints(accessToken: string) : Promise<ApiCallStatus<PointAttempt[]>> {
     const resp = await getRequest('/api/points', accessToken);
 
-    if (resp.ok) {
-        const points = await resp.json();
-        const pointsTransformed: PointAttempt[] = points.map((v:any) => ({
-            id: v.id,
-            x: v.point.x,
-            y: v.point.y,
-            r: v.point.r,
-            user: v.username,
-            attemptTime: v.attemptTime,
-            processTime: v.processTime,
-            success: v.success
-        }))
+    return handleResponse(resp, async (r) => {
+        const points = await r.json();
+        const pointsTransformed: PointAttempt[] = points.map(transformPoint);
         return {success: true, payload: pointsTransformed};
-    } else {
-        const body = await resp.text();
-        try {
-            return {success: false, message: JSON.parse(body).message, payload: []};
-        } catch (e) {
-            return {success: false, message: body, payload: []};
-        }
-    }
+    }, []);
+}
+
+export async function sendPoints(points: CompoundPointRequest, accessToken: string) : Promise<ApiCallStatus<PointAttempt[]>> {
+    const resp = await postRequest('/api/points', points, accessToken);
+
+    return handleResponse(resp, async (r) => {
+        const points = await r.json();
+        const pointsTransformed: PointAttempt[] = points.map(transformPoint);
+        return {success: true, payload: pointsTransformed};
+    }, []);
 }

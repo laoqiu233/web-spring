@@ -11,10 +11,10 @@ function App() {
 
     // Try to authorize user
     useEffect(() => {
-        dispatch(refreshUserCredentials)
-            .then((res) => {
-                navigate((res.success ? '/home' : '/login'));
-            })
+        dispatch(refreshUserCredentials())
+        .unwrap()
+        .then((res) => navigate('/home'))
+        .catch((err) => console.log(err));
     }, []);
 
     return (

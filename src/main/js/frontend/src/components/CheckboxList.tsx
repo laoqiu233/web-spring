@@ -5,10 +5,11 @@ interface CheckboxListProps {
     options: number[],
     selectedOptions: number[],
     warning: string,
+    disabled: boolean
     setValues(values: number[]): void
 };
 
-export default function CheckboxList({name, selectedOptions, options, warning, setValues}: CheckboxListProps) {
+export default function CheckboxList({name, selectedOptions, options, warning, disabled, setValues}: CheckboxListProps) {
 
     function toggleOption(x: number) {
         if (selectedOptions.includes(x)) {
@@ -30,6 +31,7 @@ export default function CheckboxList({name, selectedOptions, options, warning, s
                             value={x}
                             checked={selectedOptions.includes(x)}
                             onChange={() => toggleOption(x)}
+                            disabled={disabled}
                             className='mr-2 w-4 h-4'
                         />
                         <label>

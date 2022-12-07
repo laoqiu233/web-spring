@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { CompoundPointRequest } from "../utils/ApiClient";
 import { Button } from "./Button";
 import CheckboxList from "./CheckboxList";
 import TextInput from "./TextInput";
+import loaderImage from '../images/loader.svg';
 
 interface PointFormProps {
+    showLoader: boolean
+    onSubmit(request: CompoundPointRequest): void
 };
 
-export default function PointForm(props: PointFormProps) {
+export default function PointForm({ showLoader, onSubmit }: PointFormProps) {
     const [xs, setXs] = useState<number[]>([]);
     const [y, setY] = useState('');
     const [rs, setRs] = useState<number[]>([]);
@@ -27,6 +31,7 @@ export default function PointForm(props: PointFormProps) {
                 selectedOptions={xs}
                 warning={xWarning}
                 setValues={setXs}
+                disabled={showLoader}
             />
             <h1 className='font-bold text-lg'>Y value:</h1>
             <div className='px-3'>
@@ -38,6 +43,7 @@ export default function PointForm(props: PointFormProps) {
                     value={y}
                     onChange={(e) => setY(e.target.value)}
                     warningText={yWarning}
+                    disabled={showLoader}
                 />
             </div>
             <h1 className='font-bold text-lg'>R values:</h1>
@@ -47,8 +53,11 @@ export default function PointForm(props: PointFormProps) {
                 selectedOptions={rs}
                 warning={rWarning}
                 setValues={setRs}
+                disabled={showLoader}
             />
-            <Button disabled={disableButton}>Submit</Button>
+            <Button disabled={disableButton || showLoader} onClick={() => onSubmit({x:xs, r:rs, y: [parseFloat(y)]})}>
+                { showLoader ? <img src={loaderImage} alt='Loading animation'/> : 'Submit' }
+            </Button>
         </div>
     )
 }

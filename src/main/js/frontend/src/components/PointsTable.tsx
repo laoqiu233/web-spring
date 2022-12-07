@@ -1,10 +1,12 @@
 import { PointAttempt } from "../utils/ApiClient"
+import loaderImage from '../images/loader.svg';
 
 interface PointsTableProps {
-    points: PointAttempt[]
+    points: PointAttempt[],
+    showLoader: boolean
 };
 
-export default function PointsTable({points}: PointsTableProps) {
+export default function PointsTable({points, showLoader}: PointsTableProps) {
     return (
         <div className="bg-gray-100 w-[90%] px-5 py-3 mx-auto mb-5 rounded-xl shadow-xl lg:px-10">
             <h1 className='font-extrabold text-xl'>Attempts</h1>
@@ -24,7 +26,7 @@ export default function PointsTable({points}: PointsTableProps) {
                     </thead>
                     <tbody>
                         {
-                            points.map((v) => (
+                            !showLoader && points.map((v) => (
                                 <tr className='odd:bg-violet-100' key={v.id}>
                                     <td>{v.id}</td>
                                     <td>{v.x}</td>
@@ -40,6 +42,7 @@ export default function PointsTable({points}: PointsTableProps) {
                     </tbody>
                 </table>
             </div>
+            {showLoader && <img src={loaderImage} className='fill-violet-500 mx-auto mt-3 p-2 w-10 h-10 bg-violet-500 rounded-xl' alt='Loading'/>}
         </div>
     )
 }
