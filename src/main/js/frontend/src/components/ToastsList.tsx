@@ -8,8 +8,8 @@ interface ToastsListProps {
 
 const titleForToastType = {
     'info': 'Information',
-    'warning': 'Warning!',
-    'success': 'Success!'
+    'warning': 'Warning',
+    'success': 'Success'
 }
 
 const backgroundColorForToastType = {
@@ -24,6 +24,12 @@ const borderColorForToastType = {
     'success': 'border-green-600'
 }
 
+const iconsForToastType = {
+    'info': 'bi bi-chat-left-text',
+    'success': 'bi bi-check-circle',
+    'warning': 'bi bi-exclamation-circle'
+}
+
 
 export default function ToastsList({toasts, onToastClose}: ToastsListProps) {
     return (
@@ -32,7 +38,7 @@ export default function ToastsList({toasts, onToastClose}: ToastsListProps) {
             toasts.map((v) => (
                 <CSSTransition key={v.id} classNames='toast-fade' timeout={200}>
                     <div className={`${backgroundColorForToastType[v.type]} ${borderColorForToastType[v.type]} border-2 relative p-3 mt-3 text-white shadow-lg rounded-xl md:w-full`}>
-                        <h1 className="text-lg font-bold">{titleForToastType[v.type]}</h1>
+                        <h1 className="text-lg font-bold"><i className={iconsForToastType[v.type]}></i>  {titleForToastType[v.type]}</h1>
                         <p>{v.message}</p>
                         <i 
                             className="bi bi-x-circle absolute top-2 right-2 hover:cursor-pointer hover:text-gray-300"
