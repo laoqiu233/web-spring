@@ -17,7 +17,7 @@ export default function PointForm({ showLoader, onSubmit, setGlobalR }: PointFor
     const [rs, setRs] = useState<number[]>([]);
 
     const xWarning = (xs.length === 0 ? 'Select at least one option' : '');
-    const yWarning = (y.match(/^[+-]?[0-9]+(?:\.[0-9]+)?$/) === null ? 'Invalid number' : '');
+    const yWarning = (y.match(/^[+-]?[0-9]+(?:\.[0-9]+)?$/) === null || isNaN(parseFloat(y)) || parseFloat(y) > 3 || parseFloat(y) < -5 ? 'Invalid number' : '');
     const rWarning = (rs.length === 0 ? 'Select at least one option' : '') 
                    + (rs.filter(x => x <= 0).length > 0 ? 'You should only select the positive numbers' : '');
 

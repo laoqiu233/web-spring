@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegsiterPage';
 import HomePage from './pages/HomePage';
@@ -44,7 +44,8 @@ const router = createBrowserRouter([
           </div>
         )
       }
-    ]
+    ],
+    errorElement: <Navigate to='/'/>
   }
 ])
 
