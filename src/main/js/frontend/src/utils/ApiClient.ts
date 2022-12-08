@@ -187,3 +187,17 @@ export async function sendPoints(points: CompoundPointRequest, accessToken: stri
         return {success: true, payload: pointsTransformed};
     }, []);
 }
+
+export interface User {
+    username: string,
+    attempts: PointAttempt[]
+}
+
+export async function getUserInfo(username: string, accessToken: string): Promise<ApiCallStatus<User>> {
+    const resp = await getRequest(`/api/auth/users/${username}`, accessToken)
+
+    return handleResponse(resp, async (r) => {
+        const user = await r.json();
+        return {success: true, payload: user};
+    }, {username: 'Error', attempts: []});
+}
