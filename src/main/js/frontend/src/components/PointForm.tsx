@@ -61,7 +61,7 @@ export default function PointForm({ showLoader, onSubmit, setGlobalR }: PointFor
                 disabled={showLoader}
             />
             <Button disabled={disableButton || showLoader} onClick={() => onSubmit({x:xs, r:rs, y: [parseFloat(y)]})}>
-                { showLoader ? <img src={loaderImage} alt='Loading animation'/> : 'Submit' }
+                { showLoader ? <img src={loaderImage} alt='Loading animation' className='m-auto max-h-[1em]'/> : 'Submit' }
             </Button>
         </div>
     )

@@ -42,7 +42,7 @@ export default function HomePage() {
                 }
             })
         }
-    }, [authenticated, accessToken]);
+    }, [authenticated, accessToken, dispatch]);
 
     // Get points
     useEffect(() => {

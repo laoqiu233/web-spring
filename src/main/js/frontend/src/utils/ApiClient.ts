@@ -1,10 +1,41 @@
+import jwtDecode, { JwtPayload } from "jwt-decode";
+import { store } from "../app/store";
+import { refreshUserCredentials } from "../features/auth/authSlice";
+import { warningToast } from "../features/toasts/toastsSlice";
+
+const expirationPadding = 3;
+
+function tokenIsExpired(token: string) {
+    // Token never expires
+    const exp = jwtDecode<JwtPayload>(token).exp;
+    if (exp === undefined) return false;
+
+    return exp < new Date().getTime() / 1000 + expirationPadding;
+}
+
 function postRequest(url: string, body: object, accessToken?: string) {
     let headers = {
         'Content-Type': 'application/json',
         'Authorization': ''
     };
 
-    if (accessToken !== undefined) headers['Authorization'] = `Bearer ${accessToken}`;
+    if (accessToken !== undefined) {
+        // Check token expiration
+        if (tokenIsExpired(accessToken)) {
+            return store.dispatch(refreshUserCredentials())
+                    .unwrap()
+                    .then((res) => {
+                        return fetch(url, {method: 'POST', headers: {...headers, 'Authorization': `Bearer ${res.accessToken}`}, body: JSON.stringify(body)});
+                    })
+                    .catch((err) => {
+                        store.dispatch(warningToast(`Failed to refresh credentials: ${err}`));
+                        // Return a promise that will probably fail
+                        return fetch(url)
+                    })
+        }
+
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    };
 
     return fetch(url, {
         method: 'POST',
@@ -18,7 +49,23 @@ function getRequest(url: string, accessToken?: string) {
         'Authorization': ''
     };
 
-    if (accessToken !== undefined) headers['Authorization'] = `Bearer ${accessToken}`;
+    if (accessToken !== undefined) {
+        // Check token expiration
+        if (tokenIsExpired(accessToken)) {
+            return store.dispatch(refreshUserCredentials())
+                    .unwrap()
+                    .then((res) => {
+                        return fetch(url, {headers: {...headers, 'Authorization': `Bearer ${res.accessToken}`}});
+                    })
+                    .catch((err) => {
+                        store.dispatch(warningToast(`Failed to refresh credentials: ${err}`));
+                        // Return a promise that will probably fail
+                        return fetch(url)
+                    })
+        }
+
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    };
 
     return fetch(url, {headers});
 }

@@ -13,14 +13,14 @@ export default function RequiresAuth({children}: RequiresAuthProps) {
     const [showLoading, setShowLoading] = useState(false);
 
     useEffect(() => {
-        if (status === 'pending' || status === 'idle') {
+        if (status !== 'pending') {
+            setShowLoading(false);
+        }
+
+        if (authenticated && status === 'failed') {
+            navigate('/login');
+        } else if (!authenticated && status === 'pending') {
             setShowLoading(true);
-        } else {
-            if (authenticated) {
-                setShowLoading(false);
-            } else {
-                navigate('/login');
-            }
         }
     }, [authenticated, status, navigate]);
 

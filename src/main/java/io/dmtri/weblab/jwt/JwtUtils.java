@@ -18,7 +18,8 @@ import java.util.Date;
 public class JwtUtils {
     private static final String TYPE_KEY        = "type";
     private static final String TYPE_ACCESS     = "access";
-    private static final int    ACCESS_EXPIRES  = 5 * 60; // 5 minutes
+    // private static final int    ACCESS_EXPIRES  = 5 * 60; // 5 minutes
+    private static final int    ACCESS_EXPIRES  = 10; // 10 seconds -- for testing
     private static final String TYPE_REFRESH    = "refresh";
     private static final int    REFRESH_EXPIRES = 30 * 24 * 60 * 60; // 30 days
     private final SecretKey key;

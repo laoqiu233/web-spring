@@ -77,6 +77,7 @@ export const refreshUserCredentials = createAsyncThunk<
 >(
     'auth/refreshUserCredentials',
     async (noArg, thunkApi) => {
+        console.log('Refreshing credentials');
         const oldRefreshToken = localStorage.getItem('refreshToken');
         if (oldRefreshToken === null) return thunkApi.rejectWithValue('No refresh token found');
 

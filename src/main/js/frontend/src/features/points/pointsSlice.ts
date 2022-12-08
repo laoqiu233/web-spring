@@ -1,7 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getStaticContextFromError } from "@remix-run/router";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "../../app/store";
-import { ApiCallStatus, CompoundPointRequest, getPoints, PagedPointsResponse, PointAttempt, sendPoints } from "../../utils/ApiClient";
+import { getPoints, PagedPointsResponse, PointAttempt } from "../../utils/ApiClient";
 
 interface PointsState {
     points: PointAttempt[],
