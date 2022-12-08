@@ -84,4 +84,18 @@ public class User implements UserDetails {
     public String toString() {
         return getUsername();
     }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof User)) return false;
+        User other = (User) obj;
+
+        return username.equals(other.username);
+    }
 }

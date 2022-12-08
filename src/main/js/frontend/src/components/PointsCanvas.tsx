@@ -12,6 +12,7 @@ interface PointsCanvasProps {
     bitmapRaw: string,
     points: PointAttempt[],
     r: number,
+    disabled: boolean,
     onClick(x:number, y:number):void
 }
 
@@ -89,7 +90,7 @@ function renderGraph(ctx: CanvasRenderingContext2D, points:PointAttempt[], r: nu
     });
 }
 
-export default function PointsCanvas({bitmapRaw, points, r, onClick} : PointsCanvasProps) {
+export default function PointsCanvas({bitmapRaw, points, r, disabled, onClick} : PointsCanvasProps) {
     const [areasImage, setAreasImage] = useState('');
     const dispatch = useAppDispatch();
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -133,22 +134,25 @@ export default function PointsCanvas({bitmapRaw, points, r, onClick} : PointsCan
     return (
         <canvas
             ref={canvasRef} 
-            style={{background: `url("${areasImage}")`}} 
+            style={{background: `url("${areasImage}")`}}
+            className={(disabled ? 'blur-sm' : '')}
             width={canvasSize}
             height={canvasSize}
             onClick={(e) => {
-                if (r <= 0) {
-                    dispatch(infoToast('Please select a valid vlaue for R'));
-                } else {
-                    const offsetX = e.nativeEvent.offsetX;
-                    const offsetY = e.nativeEvent.offsetY;
+                if (!disabled) {
+                    if (r <= 0) {
+                        dispatch(infoToast('Please select a valid vlaue for R'));
+                    } else {
+                        const offsetX = e.nativeEvent.offsetX;
+                        const offsetY = e.nativeEvent.offsetY;
 
-                    let x = (2 * offsetX / canvasSize - 1) *  1.5 * r;
-                    let y = (2 * offsetY / canvasSize - 1) * -1.5 * r;
-                    x = Math.round(x * 100) / 100;
-                    y = Math.round(y * 100) / 100;
+                        let x = (2 * offsetX / canvasSize - 1) *  1.5 * r;
+                        let y = (2 * offsetY / canvasSize - 1) * -1.5 * r;
+                        x = Math.round(x * 100) / 100;
+                        y = Math.round(y * 100) / 100;
 
-                    onClick(x, y);
+                        onClick(x, y);
+                    }
                 }
             }}
         />

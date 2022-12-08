@@ -19,9 +19,10 @@ export default function HomePage() {
     const [bitmap, setBitmap] = useState('');
     const [disableForm, setDisableForm] = useState(false);
     const [globalR, setGlobalR] = useState(0);
+    const [onlyOwned, setOnlyOwned] = useState(false);
 
     function loadNewPoints(page: number, showOwned: boolean) {
-        dispatch(loadPointsFromApi({page, onlyOwned: false}))
+        dispatch(loadPointsFromApi({page, onlyOwned: showOwned}))
         .unwrap()
         .then((resp) => {
             console.log(`Loaded ${resp.points.length} points`);
@@ -47,9 +48,9 @@ export default function HomePage() {
     // Get points
     useEffect(() => {
         if (authenticated) {
-            loadNewPoints(0, false);
+            loadNewPoints(currentPage, onlyOwned);
         }
-    }, [authenticated]);
+    }, [authenticated, onlyOwned]);
 
     function onClick() {
         dispatch(logout());
@@ -76,12 +77,12 @@ export default function HomePage() {
     return (
         <div>
             <div className='bg-gray-100 w-fit p-3 rounded-xl mx-auto mb-5 shadow-xl'>
-                <PointsCanvas bitmapRaw={bitmap} points={points} r={globalR} onClick={(x,y) => submitPoints({x:[x], y:[y], r:[globalR]})}/>
+                <PointsCanvas bitmapRaw={bitmap} points={points} r={globalR} disabled={disableForm || status === 'pending'} onClick={(x,y) => submitPoints({x:[x], y:[y], r:[globalR]})}/>
             </div>
-            <PointForm showLoader={disableForm} onSubmit={submitPoints} setGlobalR={setGlobalR}/>
+            <PointForm showLoader={disableForm || status === 'pending'} onSubmit={submitPoints} setGlobalR={setGlobalR}/>
             <div className="bg-gray-100 w-[90%] px-5 py-3 mx-auto mb-5 rounded-xl shadow-xl lg:px-10">
-                <PointsTable points={points} totalPointsCount={totalPointsCount} showLoader={status === 'pending'}/>
-                <Paginator currentPage={currentPage} totalPageCount={totalPages} selectPage={(page) => loadNewPoints(page, false)}/>
+                <PointsTable points={points} totalPointsCount={totalPointsCount} onlyOwned={onlyOwned} setOnlyOwned={setOnlyOwned} showLoader={status === 'pending'}/>
+                <Paginator currentPage={currentPage} totalPageCount={totalPages} selectPage={(page) => loadNewPoints(page, onlyOwned)}/>
             </div>
             <Button onClick={onClick}>Logout</Button>
         </div>

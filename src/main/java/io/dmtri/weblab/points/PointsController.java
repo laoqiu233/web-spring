@@ -33,12 +33,13 @@ public class PointsController {
     }
 
     @GetMapping
-    public PagedPointsResponse getPoints(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "false") boolean onlyOwned) {
+    public PagedPointsResponse getPoints(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "false") boolean owned) {
         final PageRequest pr = PageRequest.of(page, 10, Sort.by("attemptTime").descending());
         Page<PointAttempt> pageResult;
-        if (onlyOwned) {
-            final String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            pageResult = repository.findAllByUsername(username, pr);
+        // Find all or only attempts owned by current user
+        if (owned) {
+            final User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+            pageResult = repository.findAllByUser(user, pr);
         } else {
             pageResult = repository.findAll(pr);
         }

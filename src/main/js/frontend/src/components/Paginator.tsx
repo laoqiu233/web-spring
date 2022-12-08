@@ -50,10 +50,10 @@ export default function Paginator({currentPage, totalPageCount, selectPage} : Pa
     return (
         <div className='flex justify-center my-5'>
             <Button disabled={currentPage === 0} onClick={() => selectPage(0)}>
-                <i className="bi bi-chevron-left"></i>
+                <i className="bi bi-chevron-double-left"></i>
             </Button>
             <Button disabled={currentPage === 0} onClick={() => selectPage(currentPage - 1)}>
-                <i className="bi bi-chevron-double-left"></i>
+                <i className="bi bi-chevron-left"></i>
             </Button>
 
             {

@@ -4,15 +4,23 @@ import loaderImage from '../images/loader.svg';
 interface PointsTableProps {
     points: PointAttempt[],
     showLoader: boolean,
-    totalPointsCount: number
+    totalPointsCount: number,
+    onlyOwned: boolean,
+    setOnlyOwned(onlyOwned: boolean):void
 };
 
-export default function PointsTable({points, showLoader, totalPointsCount}: PointsTableProps) {
+export default function PointsTable({points, showLoader, totalPointsCount, onlyOwned, setOnlyOwned}: PointsTableProps) {
     return (
         <>
-            <div className='flex flex-row flex-nowrap items-end justify-between'>
-                <h1 className='font-extrabold text-xl'>Attempts</h1>
-                <h1 className='text-md'>Showing {points.length} of {totalPointsCount}</h1>
+            <div className='flex flex-row flex-nowrap items-baseline justify-between'>
+                <div className='mb-1'>
+                    <h1 className='font-extrabold text-xl'>Attempts</h1>
+                    <div className="flex flex-row flex-nowrap items-center justify-start gap-2 text-xs">
+                        <input type='checkbox' id='only-owned' checked={onlyOwned} onChange={(e) => setOnlyOwned(e.target.checked)}/>
+                        <label htmlFor="only-owned">Show owned</label>
+                    </div>
+                </div>
+                <h1 className='text-xs'>Showing {points.length} of {totalPointsCount}</h1>
             </div>
             <div className='overflow-x-scroll rounded-xl'>
                 <table className='w-full text-center text-xs md:text-base'>
