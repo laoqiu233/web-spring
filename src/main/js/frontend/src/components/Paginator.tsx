@@ -58,7 +58,7 @@ export default function Paginator({currentPage, totalPageCount, selectPage} : Pa
 
             {
                 pageNums.map((v) => (
-                    <Button disabled={v === currentPage} onClick={() => selectPage(v)}>
+                    <Button key={v} disabled={v === currentPage} onClick={() => selectPage(v)}>
                         <p>{v+1}</p>
                     </Button>
                 ))

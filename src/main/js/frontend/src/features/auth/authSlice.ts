@@ -49,23 +49,6 @@ export function registerAndAuthenticateUser(username: string, password: string) 
     } 
 }
 
-// export async function refreshUserCredentials(dispatch: AppDispatch, getState: () => RootState): Promise<ApiCallStatus<JwtTokenPair>> {
-//     const oldRefreshToken = localStorage.getItem("refreshToken");
-//     if (oldRefreshToken === null) return {success: false, message: 'No refresh token available', payload: {accessToken: '', refreshToken: ''}};
-
-//     const result = await refreshTokens(oldRefreshToken);
-
-//     if (result.success) {
-//         const sub = jwtDecode<JwtPayload>(result.payload.accessToken).sub;
-//         if (sub === undefined) return {success: false, message: 'Invalid tokens', payload: result.payload};
-
-//         localStorage.setItem('refreshToken', result.payload.refreshToken);
-//         dispatch(authenticate({accessToken: result.payload.accessToken, username:sub}));
-//     }
-
-//     return result;
-// }
-
 export const refreshUserCredentials = createAsyncThunk<
     UserAuthInfo,
     void,

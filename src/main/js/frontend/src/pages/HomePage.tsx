@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { Button } from '../components/Button';
 import Paginator from '../components/Paginator';
 import PointForm from '../components/PointForm';
 import PointsCanvas from '../components/PointsCanvas';
 import PointsTable from '../components/PointsTable';
-import { logout } from '../features/auth/authSlice';
 import { loadPointsFromApi } from '../features/points/pointsSlice';
-import { successToast, toastAdded, warningToast } from '../features/toasts/toastsSlice';
+import { successToast, warningToast } from '../features/toasts/toastsSlice';
 import { CompoundPointRequest, getCanvasBitmap, sendPoints } from '../utils/ApiClient';
 
 export default function HomePage() {
     const { authenticated, userInfo: {accessToken} } = useAppSelector(state => state.auth);
     const { points, totalPointsCount, status, currentPage, totalPages } = useAppSelector(state => state.points);
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [bitmap, setBitmap] = useState('');
     const [disableForm, setDisableForm] = useState(false);
@@ -43,7 +39,7 @@ export default function HomePage() {
                 }
             })
         }
-    }, [authenticated, accessToken, dispatch]);
+    }, [authenticated, accessToken]);
 
     // Get points
     useEffect(() => {

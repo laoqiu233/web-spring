@@ -10,23 +10,16 @@ interface RequiresAuthProps {
 export default function RequiresAuth({children}: RequiresAuthProps) {
     const { authenticated, status } = useAppSelector(state => state.auth);
     const navigate = useNavigate();
-    const [showLoading, setShowLoading] = useState(false);
 
-    useEffect(() => {
-        if (status !== 'pending') {
-            setShowLoading(false);
-        }
+    const showLoader = !authenticated && status === 'pending';
 
-        if (authenticated && status === 'failed') {
-            navigate('/login');
-        } else if (!authenticated && status === 'pending') {
-            setShowLoading(true);
-        }
-    }, [authenticated, status, navigate]);
+    if (status === 'failed') {
+        navigate('/login');
+    }
 
     return (
-        showLoading ? 
-        <img className='absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2' src={loaderImage} alt='loading'/> :
+        showLoader ? 
+        <img src={loaderImage} alt='loading'/> :
         <>{children}</>
     );
 }
