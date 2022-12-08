@@ -22,6 +22,9 @@ export default function HomePage() {
         .unwrap()
         .then((resp) => {
             console.log(`Loaded ${resp.points.length} points`);
+            if (resp.pageNum >= resp.pageCount && resp.pageNum !== 0) {
+                loadNewPoints(0, showOwned);
+            }
         }) 
         .catch((err) => {
             dispatch(warningToast(`Failed to load new points: ${err}`));
@@ -56,7 +59,7 @@ export default function HomePage() {
                 const pointsCount = result.payload.length;
                 const pointsHit = result.payload.filter((v) => v.success).length;
                 dispatch(successToast(`Sent ${pointsCount} points, ${pointsHit} hits, ${pointsCount - pointsHit} misses.`));
-                loadNewPoints(currentPage, false);
+                loadNewPoints(currentPage, onlyOwned);
             } else {
                 dispatch(warningToast(`Submission failed: ${result.message}`));
             }
