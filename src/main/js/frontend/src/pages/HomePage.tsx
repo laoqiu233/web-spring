@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { Button } from '../components/Button';
+import Paginator from '../components/Paginator';
 import PointForm from '../components/PointForm';
 import PointsCanvas from '../components/PointsCanvas';
 import PointsTable from '../components/PointsTable';
@@ -12,18 +13,18 @@ import { CompoundPointRequest, getCanvasBitmap, sendPoints } from '../utils/ApiC
 
 export default function HomePage() {
     const { authenticated, userInfo: {accessToken} } = useAppSelector(state => state.auth);
-    const { points, status } = useAppSelector(state => state.points);
+    const { points, totalPointsCount, status, currentPage, totalPages } = useAppSelector(state => state.points);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [bitmap, setBitmap] = useState('');
     const [disableForm, setDisableForm] = useState(false);
     const [globalR, setGlobalR] = useState(0);
 
-    function loadNewPoints(showOwned: boolean) {
-        dispatch(loadPointsFromApi(false))
+    function loadNewPoints(page: number, showOwned: boolean) {
+        dispatch(loadPointsFromApi({page, onlyOwned: false}))
         .unwrap()
-        .then((points) => {
-            console.log(`Loaded ${points.length} points`);
+        .then((resp) => {
+            console.log(`Loaded ${resp.points.length} points`);
         }) 
         .catch((err) => {
             dispatch(warningToast(`Failed to load new points: ${err}`));
@@ -46,7 +47,7 @@ export default function HomePage() {
     // Get points
     useEffect(() => {
         if (authenticated) {
-            loadNewPoints(false);
+            loadNewPoints(0, false);
         }
     }, [authenticated]);
 
@@ -64,7 +65,7 @@ export default function HomePage() {
                 const pointsCount = result.payload.length;
                 const pointsHit = result.payload.filter((v) => v.success).length;
                 dispatch(successToast(`Sent ${pointsCount} points, ${pointsHit} hits, ${pointsCount - pointsHit} misses.`));
-                loadNewPoints(false);
+                loadNewPoints(currentPage, false);
             } else {
                 dispatch(warningToast(`Submission failed: ${result.message}`));
             }
@@ -78,7 +79,10 @@ export default function HomePage() {
                 <PointsCanvas bitmapRaw={bitmap} points={points} r={globalR} onClick={(x,y) => submitPoints({x:[x], y:[y], r:[globalR]})}/>
             </div>
             <PointForm showLoader={disableForm} onSubmit={submitPoints} setGlobalR={setGlobalR}/>
-            <PointsTable points={points} showLoader={status === 'pending'}/>
+            <div className="bg-gray-100 w-[90%] px-5 py-3 mx-auto mb-5 rounded-xl shadow-xl lg:px-10">
+                <PointsTable points={points} totalPointsCount={totalPointsCount} showLoader={status === 'pending'}/>
+                <Paginator currentPage={currentPage} totalPageCount={totalPages} selectPage={(page) => loadNewPoints(page, false)}/>
+            </div>
             <Button onClick={onClick}>Logout</Button>
         </div>
     )

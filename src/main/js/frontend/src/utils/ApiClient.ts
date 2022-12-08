@@ -98,6 +98,13 @@ export interface PointAttempt {
     user: string
 };
 
+export interface PagedPointsResponse {
+    points: PointAttempt[],
+    pageNum: number,
+    pageCount: number,
+    totalPointsCount: number
+};
+
 function transformPoint(v: any) {
     return {
         id: v.id,
@@ -111,14 +118,17 @@ function transformPoint(v: any) {
     }
 }
 
-export async function getAllPoints(accessToken: string) : Promise<ApiCallStatus<PointAttempt[]>> {
-    const resp = await getRequest('/api/points', accessToken);
+export async function getPoints(page:number, onlyOwned:boolean, accessToken: string) : Promise<ApiCallStatus<PagedPointsResponse>> {
+    const resp = await getRequest(`/api/points?page=${page}&owned=${onlyOwned}`, accessToken);
 
     return handleResponse(resp, async (r) => {
-        const points = await r.json();
-        const pointsTransformed: PointAttempt[] = points.map(transformPoint);
+        const pointsResp: PagedPointsResponse = await r.json();
+        const pointsTransformed = {
+            ...pointsResp,
+            points: pointsResp.points.map(transformPoint)
+        };
         return {success: true, payload: pointsTransformed};
-    }, []);
+    }, {points:[], pageNum:0, pageCount:0, totalPointsCount:0});
 }
 
 export async function sendPoints(points: CompoundPointRequest, accessToken: string) : Promise<ApiCallStatus<PointAttempt[]>> {

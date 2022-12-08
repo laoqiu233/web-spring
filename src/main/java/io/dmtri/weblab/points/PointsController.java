@@ -3,11 +3,16 @@ package io.dmtri.weblab.points;
 import io.dmtri.weblab.areas.Area;
 import io.dmtri.weblab.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Iterator;
@@ -28,8 +33,17 @@ public class PointsController {
     }
 
     @GetMapping
-    public Iterable<PointAttempt> getPoints() {
-        return repository.findAll();
+    public PagedPointsResponse getPoints(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "false") boolean onlyOwned) {
+        final PageRequest pr = PageRequest.of(page, 10, Sort.by("attemptTime").descending());
+        Page<PointAttempt> pageResult;
+        if (onlyOwned) {
+            final String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            pageResult = repository.findAllByUsername(username, pr);
+        } else {
+            pageResult = repository.findAll(pr);
+        }
+
+        return new PagedPointsResponse(pageResult.getContent(), page, pageResult.getTotalPages(), pageResult.getTotalElements());
     }
 
     @PostMapping

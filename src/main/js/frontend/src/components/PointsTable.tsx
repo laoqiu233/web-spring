@@ -3,13 +3,17 @@ import loaderImage from '../images/loader.svg';
 
 interface PointsTableProps {
     points: PointAttempt[],
-    showLoader: boolean
+    showLoader: boolean,
+    totalPointsCount: number
 };
 
-export default function PointsTable({points, showLoader}: PointsTableProps) {
+export default function PointsTable({points, showLoader, totalPointsCount}: PointsTableProps) {
     return (
-        <div className="bg-gray-100 w-[90%] px-5 py-3 mx-auto mb-5 rounded-xl shadow-xl lg:px-10">
-            <h1 className='font-extrabold text-xl'>Attempts</h1>
+        <>
+            <div className='flex flex-row flex-nowrap items-end justify-between'>
+                <h1 className='font-extrabold text-xl'>Attempts</h1>
+                <h1 className='text-md'>Showing {points.length} of {totalPointsCount}</h1>
+            </div>
             <div className='overflow-x-scroll rounded-xl'>
                 <table className='w-full text-center text-xs md:text-base'>
                     <thead>
@@ -43,6 +47,6 @@ export default function PointsTable({points, showLoader}: PointsTableProps) {
                 </table>
             </div>
             {showLoader && <img src={loaderImage} className='fill-violet-500 mx-auto mt-3 p-2 w-10 h-10 bg-violet-500 rounded-xl' alt='Loading'/>}
-        </div>
+        </>
     )
 }
