@@ -52,12 +52,6 @@ export default function HomePage() {
         }
     }, [authenticated, onlyOwned]);
 
-    function onClick() {
-        dispatch(logout());
-        localStorage.removeItem('refreshToken');
-        navigate('/login')
-    }
-
     function submitPoints(request: CompoundPointRequest) {
         setDisableForm(true);
         sendPoints(request, accessToken)
@@ -84,7 +78,6 @@ export default function HomePage() {
                 <PointsTable points={points} totalPointsCount={totalPointsCount} onlyOwned={onlyOwned} setOnlyOwned={setOnlyOwned} showLoader={status === 'pending'}/>
                 <Paginator currentPage={currentPage} totalPageCount={totalPages} selectPage={(page) => loadNewPoints(page, onlyOwned)}/>
             </div>
-            <Button onClick={onClick}>Logout</Button>
         </div>
     )
 }
