@@ -142,7 +142,8 @@ export interface PointAttempt {
     attemptTime: number,
     processTime: number,
     success: boolean,
-    user: string
+    username: string
+    userId: number
 };
 
 export interface PagedPointsResponse {
@@ -158,7 +159,8 @@ function transformPoint(v: any) {
         x: v.point.x,
         y: v.point.y,
         r: v.point.r,
-        user: v.username,
+        username: v.username,
+        userId: v.userId,
         attemptTime: v.attemptTime,
         processTime: v.processTime,
         success: v.success
@@ -189,15 +191,16 @@ export async function sendPoints(points: CompoundPointRequest, accessToken: stri
 }
 
 export interface User {
+    userId: number,
     username: string,
     attempts: PointAttempt[]
 }
 
-export async function getUserInfo(username: string, accessToken: string): Promise<ApiCallStatus<User>> {
-    const resp = await getRequest(`/api/auth/users/${username}`, accessToken)
+export async function getUserInfo(userId: number, accessToken: string): Promise<ApiCallStatus<User>> {
+    const resp = await getRequest(`/api/auth/users/${userId}`, accessToken)
 
     return handleResponse(resp, async (r) => {
         const user = await r.json();
         return {success: true, payload: user};
-    }, {username: 'Error', attempts: []});
+    }, {userId: 0, username: 'Error', attempts: []});
 }

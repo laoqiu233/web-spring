@@ -48,7 +48,7 @@ export default function PointsTable({points, showLoader, totalPointsCount, onlyO
                                     <td>{new Date(v.attemptTime).toLocaleString()}</td>
                                     <td>{v.processTime} ms</td>
                                     <td>{v.success ? <span className="text-violet-500">HIT</span> : <span className="text-red-500">MISS</span>}</td>
-                                    <td><UserInfo username={v.user}/></td>
+                                    <td><UserInfo username={v.username} userId={v.userId}/></td>
                                 </tr>
                             ))
                         }

@@ -1,5 +1,6 @@
 package io.dmtri.weblab.jwt;
 
+import io.dmtri.weblab.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,16 +30,16 @@ public class JwtUtils {
     }
 
     public String generateAccessToken(UserDetails user) {
-        return buildToken(user.getUsername(), ACCESS_EXPIRES, TYPE_ACCESS);
+        return buildToken((User) user, ACCESS_EXPIRES, TYPE_ACCESS);
     }
 
     public String generateRefreshToken(UserDetails user) {
-        return buildToken(user.getUsername(), REFRESH_EXPIRES, TYPE_REFRESH);
+        return buildToken((User) user, REFRESH_EXPIRES, TYPE_REFRESH);
     }
 
-    private String buildToken(String username, int expiresInSeconds, String type) {
+    private String buildToken(User user, int expiresInSeconds, String type) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getId() + "|" + user.getUsername())
                 .setExpiration(Date.from(Instant.now().plusSeconds(expiresInSeconds)))
                 .claim(TYPE_KEY, type)
                 .signWith(key)

@@ -38,10 +38,12 @@ public class JwtProvider implements AuthenticationProvider {
 
         if (jwtUtils.validateAccessToken(token)) {
             try {
-                UserDetails user = service.loadUserByUsername(jwtUtils.getClaims(token).getSubject());
+                String username = jwtUtils.getClaims(token).getSubject().split("|", 2)[1].substring(1);
+                UserDetails user = service.loadUserByUsername(username);
                 jwt.setUser(user);
                 authentication.setAuthenticated(true);
             } catch (UsernameNotFoundException e) {
+                System.out.println("Username not found");
                 jwt.setUser(null);
                 authentication.setAuthenticated(false);
             }

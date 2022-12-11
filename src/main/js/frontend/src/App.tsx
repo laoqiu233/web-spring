@@ -9,7 +9,7 @@ import loaderSvg from './images/loader.svg'
 
 function App() {
     const toasts = useAppSelector(state => state.toasts.toasts);
-    const { authenticated, userInfo: { username } } = useAppSelector(state => state.auth);
+    const { authenticated, userInfo: { username, userId } } = useAppSelector(state => state.auth);
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -38,7 +38,7 @@ function App() {
                 { authenticated && 
                 <div className='flex flex-row flex-nowrap items-center gap-3'>
                     <div className='hidden md:block'>
-                        <UserInfo username={username} />
+                        <UserInfo username={username} userId={userId} />
                     </div>
                     <i className="bi bi-box-arrow-right hover:text-violet-500 hover:cursor-pointer text-xl" onClick={logoutOnClick}></i>
                 </div>

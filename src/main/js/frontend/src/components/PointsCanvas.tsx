@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { infoToast } from "../features/toasts/toastsSlice";
-import { PointAttempt } from "../utils/ApiClient";
+import { getCanvasBitmap, PointAttempt } from "../utils/ApiClient";
 
 const canvasSize = 300;
 const themeColor = [0xAA, 0xBB, 0xCC, 0xFF];
@@ -9,7 +9,6 @@ const hitColor = 'rgb(139, 92, 246)';
 const missColor = 'rgb(239, 68, 68)';
 
 interface PointsCanvasProps {
-    bitmapRaw: string,
     points: PointAttempt[],
     r: number,
     disabled: boolean,
@@ -90,46 +89,51 @@ function renderGraph(ctx: CanvasRenderingContext2D, points:PointAttempt[], r: nu
     });
 }
 
-export default function PointsCanvas({bitmapRaw, points, r, disabled, onClick} : PointsCanvasProps) {
+export default function PointsCanvas({points, r, disabled, onClick} : PointsCanvasProps) {
+    const { authenticated, userInfo: { accessToken } } = useAppSelector(state => state.auth);
     const [areasImage, setAreasImage] = useState('');
     const dispatch = useAppDispatch();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     
     useEffect(() => {
-        if (canvasRef.current !== null) {
-            const ctx = canvasRef.current.getContext('2d');
-            // Decode base64 binary data into byte-string
-            const bitmapBytes = atob(bitmapRaw);
-            let bitmap = [];
+        if (authenticated) {
+            getCanvasBitmap(accessToken)
+            .then((res) => {
+                if (res.success && canvasRef.current != null) {
+                    const ctx = canvasRef.current.getContext('2d');
+                    // Decode base64 binary data into byte-string
+                    const bitmapBytes = atob(res.payload);
+                    let bitmap = [];
 
-            // Counts bitmap side length
-            let s = 0;
+                    // Counts bitmap side length
+                    let s = 0;
 
-            for (let i = 0; i < bitmapBytes.length; i++) {
-                for (let j = 0; j < 8; j++) {
-                    bitmap.push((bitmapBytes.charCodeAt(i) >> (7 - j)) % 2);
+                    for (let i = 0; i < bitmapBytes.length; i++) {
+                        for (let j = 0; j < 8; j++) {
+                            bitmap.push((bitmapBytes.charCodeAt(i) >> (7 - j)) % 2);
+                            if (bitmap.length >= (s+1) * (s+1)) s++;
+                        }
+                    }
 
-                    if (bitmap.length >= (s+1) * (s+1)) s++;
+                    bitmap = bitmap.slice(0, s*s);
+                    // Workaround to avoid painting image multiple times on canvas.
+                    // Due to glitch the backgorund dissappears on mouse move.
+                    if (ctx !== null && canvasRef.current !== null) {
+                        const areasImage = generateImageDataFromBitmap(ctx, bitmap, s);
+                        ctx.putImageData(areasImage, 0, 0);
+                        setAreasImage(canvasRef.current.toDataURL());
+                    }
                 }
-            }
-
-            bitmap = bitmap.slice(0, s*s);
-            // Workaround to avoid painting image multiple times on canvas.
-            // Due to glitch the backgorund dissappears on mouse move.
-            if (ctx !== null && canvasRef.current !== null) {
-                const areasImage = generateImageDataFromBitmap(ctx, bitmap, s);
-                ctx.putImageData(areasImage, 0, 0);
-                setAreasImage(canvasRef.current.toDataURL());
-            }
+            });
         }
-    }, [bitmapRaw]);
+    }, [authenticated, canvasRef]);
 
     useEffect(() => {
         if (canvasRef.current !== null) {
             const ctx = canvasRef.current.getContext('2d');
             if (ctx !== null) renderGraph(ctx, points, r);
         }
-    }, [points, r]);
+    }, [points, r, canvasRef]);
 
     return (
         <canvas

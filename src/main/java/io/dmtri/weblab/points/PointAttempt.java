@@ -30,7 +30,7 @@ public class PointAttempt {
     @Column(nullable = false)
     private boolean success;
     @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinColumn(name="username", nullable = false)
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
 
     public PointAttempt() {}
@@ -85,6 +85,10 @@ public class PointAttempt {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public long getUserId() {
+        return user.getId();
     }
 
     public String getUsername() {

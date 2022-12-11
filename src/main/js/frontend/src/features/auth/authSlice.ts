@@ -4,6 +4,7 @@ import { AppDispatch, AppThunk, RootState } from "../../app/store";
 import { ApiCallStatus, JwtTokenPair, loginUser, refreshTokens, registerUser } from "../../utils/ApiClient";
 
 interface UserAuthInfo {
+    userId: number,
     username: string,
     accessToken: string
 }
@@ -16,6 +17,7 @@ interface AuthState {
 
 const initialState: AuthState = {
     userInfo: {
+        userId: 0,
         username: '',
         accessToken: ''
     },
@@ -28,8 +30,13 @@ export function validateUsernamePassword(username: string, password: string): Ap
         const result = await loginUser(username, password);
 
         if (result.success) {
+            const sub = jwtDecode<JwtPayload>(result.payload.accessToken).sub;
+            if (sub === undefined) return {success: false, message: 'Invalid token', payload: {accessToken:'', refreshToken:''}};
+
+
             localStorage.setItem('refreshToken', result.payload.refreshToken);
-            dispatch(authenticate({username, accessToken: result.payload.accessToken}));
+            const [id, username] = sub.split('|', 2);
+            dispatch(authenticate({userId: parseInt(id), username, accessToken: result.payload.accessToken}));
         }
 
         return result;
@@ -41,8 +48,13 @@ export function registerAndAuthenticateUser(username: string, password: string) 
         const result = await registerUser(username, password);
         
         if (result.success) {
+            const sub = jwtDecode<JwtPayload>(result.payload.accessToken).sub;
+            if (sub === undefined) return {success: false, message: 'Invalid token', payload: {accessToken:'', refreshToken:''}};
+
+
             localStorage.setItem('refreshToken', result.payload.refreshToken);
-            dispatch(authenticate({username, accessToken: result.payload.accessToken}));
+            const [id, username] = sub.split('|', 2);
+            dispatch(authenticate({userId: parseInt(id), username, accessToken: result.payload.accessToken}));
         }
 
         return result;
@@ -72,7 +84,8 @@ export const refreshUserCredentials = createAsyncThunk<
             if (sub === undefined) return thunkApi.rejectWithValue('Invalid token');
 
             localStorage.setItem('refreshToken', refreshToken);
-            return {accessToken, username: sub};
+            const [id, username] = sub.split('|', 2);
+            return {userId: parseInt(id), accessToken, username: username};
         }
 
         return thunkApi.rejectWithValue(result.message || 'Something went wrong');

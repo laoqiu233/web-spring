@@ -5,19 +5,20 @@ import avatarImage from '../images/avatar.jpg';
 import { getUserInfo, User } from "../utils/ApiClient";
 
 interface UserInfoProps {
-    username: string
+    username: string,
+    userId: number
 }
 
-function UserBadge({ username } : UserInfoProps) {
+function UserBadge({ userId } : UserInfoProps) {
     const {authenticated, userInfo: {accessToken}} = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<User>({username: '', attempts: []});
+    const [user, setUser] = useState<User>({userId: 0, username: '', attempts: []});
 
     useEffect(() => {
         if (authenticated) {
             setIsLoading(true);
-            getUserInfo(username, accessToken)
+            getUserInfo(userId, accessToken)
             .then((result) => {
                 setIsLoading(false);
                 setUser(result.payload);
@@ -66,7 +67,7 @@ function UserBadge({ username } : UserInfoProps) {
     }
 }
 
-export default function UserInfo({ username } : UserInfoProps) {
+export default function UserInfo({ userId, username } : UserInfoProps) {
     const [showBadge, setShowBadge] = useState(false);
 
     return <div className='relative'>
@@ -77,6 +78,6 @@ export default function UserInfo({ username } : UserInfoProps) {
         >
         {username}
         </span>
-        {showBadge && <UserBadge username={username}/>}
+        {showBadge && <UserBadge userId={userId} username={username}/>}
     </div>
 }

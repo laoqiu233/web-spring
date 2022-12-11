@@ -61,6 +61,13 @@ public class PointsController {
         while (it.hasNext()) {
             Point p = it.next();
             PointAttempt attempt = new PointAttempt(p, checker);
+
+            // Quick and dirty validation
+            // R should be a positive integer
+            if (p.r() <= 0 || p.r() != Math.round(p.r())) {
+                continue;
+            }
+
             attempt.setUser(user);
             results.add(repository.save(attempt));
         }

@@ -19,6 +19,8 @@ import java.util.List;
 @Table(name="users")
 public class User implements UserDetails {
     @Id
+    private long id;
+    @Column(name="username", unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
@@ -29,6 +31,14 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override
@@ -87,7 +97,7 @@ public class User implements UserDetails {
 
     @Override
     public int hashCode() {
-        return username.hashCode();
+        return Long.valueOf(id).hashCode();
     }
 
     @Override
@@ -96,6 +106,6 @@ public class User implements UserDetails {
         if (!(obj instanceof User)) return false;
         User other = (User) obj;
 
-        return username.equals(other.username);
+        return id == other.id;
     }
 }

@@ -37,13 +37,9 @@ public class AuthController {
         return repository.findAll();
     }
 
-    @GetMapping("/users/{username}")
-    public User getUserInfo(@PathVariable String username) {
-        try {
-            return (User) service.loadUserByUsername(username);
-        } catch (UsernameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
+    @GetMapping("/users/{userId}")
+    public User getUserInfo(@PathVariable long userId) {
+        return repository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @PostMapping("/login")
@@ -70,7 +66,7 @@ public class AuthController {
     public JwtPair refresh(@RequestBody JwtRefreshToken refreshToken) {
         if (jwt.validateRefreshToken(refreshToken.refreshToken())) {
             try {
-                UserDetails user = service.loadUserByUsername(jwt.getClaims(refreshToken.refreshToken()).getSubject());
+                UserDetails user = service.loadUserByUsername(jwt.getClaims(refreshToken.refreshToken()).getSubject().split("|", 2)[1].substring(1));
                 return new JwtPair(
                     jwt.generateAccessToken(user),
                     jwt.generateRefreshToken(user)
@@ -92,7 +88,7 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad password");
         }
 
-        if (repository.existsById(request.username())) {
+        if (repository.existsByUsername(request.username())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A user with the same username already exists");
         }
 
