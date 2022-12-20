@@ -6,7 +6,7 @@ import PointsCanvas from '../components/PointsCanvas';
 import PointsTable from '../components/PointsTable';
 import { loadPointsFromApi } from '../features/points/pointsSlice';
 import { successToast, warningToast } from '../features/toasts/toastsSlice';
-import { CompoundPointRequest, getCanvasBitmap, sendPoints } from '../utils/ApiClient';
+import { CompoundPointRequest, sendPoints } from '../utils/ApiClient';
 
 export default function HomePage() {
     const { authenticated, userInfo: {accessToken} } = useAppSelector(state => state.auth);

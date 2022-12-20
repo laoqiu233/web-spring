@@ -3,7 +3,7 @@ import { CompoundPointRequest } from "../utils/ApiClient";
 import { Button } from "./Button";
 import CheckboxList from "./CheckboxList";
 import TextInput from "./TextInput";
-import loaderImage from '../images/loader.svg';
+import { ReactComponent as Loader } from '../images/loader.svg';
 
 interface PointFormProps {
     showLoader: boolean
@@ -61,7 +61,7 @@ export default function PointForm({ showLoader, onSubmit, setGlobalR }: PointFor
                 disabled={showLoader}
             />
             <Button disabled={disableButton || showLoader} onClick={() => onSubmit({x:xs, r:rs, y: [parseFloat(y)]})}>
-                { showLoader ? <img src={loaderImage} alt='Loading animation' className='m-auto max-h-[1em]'/> : 'Submit' }
+                { showLoader ? <Loader className='m-auto max-h-[1em]'/> : 'Submit' }
             </Button>
         </div>
     )

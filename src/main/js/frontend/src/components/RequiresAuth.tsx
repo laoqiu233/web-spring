@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
-import loaderImage from '../images/loader.svg';
+import { ReactComponent as Loader } from '../images/loader.svg';
 
 interface RequiresAuthProps {
     children: React.ReactNode
@@ -19,7 +18,7 @@ export default function RequiresAuth({children}: RequiresAuthProps) {
 
     return (
         showLoader ? 
-        <img src={loaderImage} alt='loading'/> :
+        <Loader/> :
         <>{children}</>
     );
 }

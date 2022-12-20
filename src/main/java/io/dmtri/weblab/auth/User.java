@@ -6,6 +6,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -19,6 +20,7 @@ import java.util.List;
 @Table(name="users")
 public class User implements UserDetails {
     @Id
+    @GeneratedValue
     private long id;
     @Column(name="username", unique = true)
     private String username;
@@ -61,7 +63,7 @@ public class User implements UserDetails {
     }
 
     public void addAttempt(PointAttempt attempt) {
-        attempts.add(attempt);
+        getAttempts().add(attempt);
     }
 
     public List<PointAttempt> getAttempts() {

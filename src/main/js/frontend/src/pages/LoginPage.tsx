@@ -5,7 +5,7 @@ import { Button } from "../components/Button";
 import TextInput from "../components/TextInput";
 import { validateUsernamePassword } from "../features/auth/authSlice";
 import image from '../images/zxc-cat.gif';
-import loaderAnimation from '../images/loader.svg'
+import { ReactComponent as Loader } from '../images/loader.svg'
 import PasswordInput from "../components/PasswordInput";
 
 export default function LoginPage() {
@@ -48,7 +48,7 @@ export default function LoginPage() {
                     <TextInput id="username" name="username" placeholder='Username' value={username} onChange={e => setUsername(e.target.value)}/>
                     <PasswordInput id="password" name="password" placeholder='Password' value={password} onChange={e => setPassword(e.target.value)}/>
                     <p className="text-red-500 text-xs mb-5">{warningText}</p>
-                    <Button disabled={disableButton}>{loading ? <img src={loaderAnimation} alt='Loading' className="m-auto max-h-[1em]"/> : 'Login'}</Button>
+                    <Button disabled={disableButton}>{loading ? <Loader className="m-auto max-h-[1em]"/> : 'Login'}</Button>
                 </form>
                 <Link to="/register" className='text-xs text-gray-500 text-center block hover:text-violet-500'>Or register a new account</Link>
             </section>
