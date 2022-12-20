@@ -69,4 +69,8 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token).getBody();
     }
+
+    public String getUsernameFromToken(String token) {
+        return getClaims(token).getSubject().split("\\|", 2)[1];
+    }
 }

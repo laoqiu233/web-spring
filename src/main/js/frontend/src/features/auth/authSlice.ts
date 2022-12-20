@@ -117,6 +117,10 @@ export const authSlice = createSlice({
             state.status = 'success';
         })
         .addCase(refreshUserCredentials.rejected, (state, action) => {
+            state.userInfo.userId = 0;
+            state.userInfo.username = '';
+            state.userInfo.accessToken = '';
+            state.authenticated = false;
             state.status = 'failed';
         })
     }

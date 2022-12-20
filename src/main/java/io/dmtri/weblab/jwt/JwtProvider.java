@@ -38,7 +38,7 @@ public class JwtProvider implements AuthenticationProvider {
 
         if (jwtUtils.validateAccessToken(token)) {
             try {
-                String username = jwtUtils.getClaims(token).getSubject().split("|", 2)[1].substring(1);
+                String username = jwtUtils.getUsernameFromToken(token);
                 UserDetails user = service.loadUserByUsername(username);
                 jwt.setUser(user);
                 authentication.setAuthenticated(true);

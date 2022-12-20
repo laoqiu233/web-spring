@@ -68,7 +68,7 @@ public class PointsController {
                 continue;
             }
 
-            user.addAttempt(attempt);
+            attempt.setUser(user);
             results.add(repository.save(attempt));
         }
 
